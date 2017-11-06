@@ -96,7 +96,7 @@ void DrumFeatureExtractor::extractDrumFeatures(string sfName1, bool single_vecto
 		featureNetwork->addMarSystem(spectimeFanout); //ADD IT TO FEATURE NETWORK.
 
 		//define accSize as ~30 seconds, and create Accumulator Marsystem
-		mrs_natural accSize_ = 1290;
+		mrs_natural accSize_ = 513;
 		MarSystem* acc = mng.create("Accumulator", "acc");
 		acc->updControl("mrs_natural/maxTimes", accSize_);
 		acc->updControl("mrs_string/mode", "explicitFlush");
@@ -110,10 +110,10 @@ void DrumFeatureExtractor::extractDrumFeatures(string sfName1, bool single_vecto
 		bextractNetwork->addMarSystem(featureNetwork);
 
 		//access the control
-		bextractNetwork->linkControl("Accumulator/acc/Series/featureNewtork/SoundFileSource/src/mrs_string/filename", "mrs_string/filename");
+		bextractNetwork->linkControl("Accumulator/acc/Series/featureNetwork/SoundFileSource/src/mrs_string/filename", "mrs_string/filename");
 		bextractNetwork->linkControl("mrs_bool/hasData","Accumulator/acc/Series/featureNetwork/SoundFileSource/src/mrs_bool/hasData");
 		bextractNetwork->linkControl("mrs_natural/pos",
-			"Accumulator/acc/Series/featureNetwork/Fanout/fanout/SoundFileSource/src/mrs_natural/pos");
+			"Accumulator/acc/Series/featureNetwork/SoundFileSource/src/mrs_natural/pos");
 		bextractNetwork->linkControl("mrs_real/duration",
 			"Accumulator/acc/Series/featureNetwork/SoundFileSource/src/mrs_real/duration");
 		bextractNetwork->linkControl("mrs_string/previouslyPlaying",
@@ -184,9 +184,9 @@ void DrumFeatureExtractor::extractDrumFeatures(string sfName1, bool single_vecto
 		MarControlPtr ctrl_previouslyPlaying = bextractNetwork->getctrl("mrs_string/previouslyPlaying");
 		MarControlPtr ctrl_currentCollectionNewFile = bextractNetwork->getctrl("mrs_bool/currentCollectionNewFile");
 
-		//mrs_string previouslyPlaying, currentlyPlaying;
+		mrs_string previouslyPlaying, currentlyPlaying;
 
-		//int n = 0;
+		int n = 0;
 		//int advance = 0;
 
 		//vector<string> processedFiles;
@@ -199,23 +199,33 @@ void DrumFeatureExtractor::extractDrumFeatures(string sfName1, bool single_vecto
 		//see line 220 for collection.
 		//looking at 2nd example which just ticks.
 
+		//hmm this wasn't set before.
+		featureNetwork->updControl("mrs_natural/inSamples", 512);
+		featureNetwork->updControl("mrs_natural/onSamples", 512);
+		featureNetwork->updControl("mrs_real/israte", 44100.0);
+		featureNetwork->updControl("mrs_real/osrate", 44100.0);
+
 		while (ctrl_hasData->to<mrs_bool>())
 		{
 			bextractNetwork->tick();
-			//currentlyPlaying = ctrl_currentlyPlaying->to<mrs_string>();
+			currentlyPlaying = ctrl_currentlyPlaying->to<mrs_string>();
 			//dont need a classifier.
 			//bextractNetwork->updControl("mrs_natural/advance", 1);
-			/*for collections - see line 285
+			//for collections - see line 285
 			currentlyPlaying = ctrl_currentlyPlaying->to<mrs_string>();
 			  if (ctrl_currentCollectionNewFile->to<mrs_bool>())
 			  {
 				// if (memSize != 0)
 				// featureNetwork->updControl("TextureStats/tStats/mrs_bool/reset",  true);
+				
+				  //DO WE NEED A TEXTURE STATS Connected to that?
+				  //MEAN AND STD DEV.
+				//DO RESETING...
 				cout << "Processing: " << n << " - " << currentlyPlaying << endl;
 				n++;
 			  }
 			
-			*/
+		
 		}
 
 	}
@@ -234,11 +244,8 @@ void DrumFeatureExtractor::extractDrumFeatures(string sfName1, bool single_vecto
 	*/
 
 	/*SOME CONTROLS*/
-	/*featureNetwork->updControl("mrs_natural/inSamples", 512);
-	featureNetwork->updControl("mrs_natural/onSamples", 512);
-	featureNetwork->updControl("mrs_real/israte", 44100.0);
-	featureNetwork->updControl("mrs_real/osrate", 44100.0);
-	*/
+	
+	
 	
 	/*NEED A LOOP THAT TICKS THE SYSTEM.*/
 
