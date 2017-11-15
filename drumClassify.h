@@ -61,7 +61,23 @@ class DrumFeatureExtractor {
 public:
 	DrumFeatureExtractor();
 	~DrumFeatureExtractor();																											//void feedForwardSingleInstance(/*Eigen::MatrixXf instance*/); //prints whether an instance was correctly classified
-	void extractDrumFeatures(string name, bool single_vector/*, bool stereo*/);																						//and what classification it was assigned
+	void extractDrumFeatures();																						//and what classification it was assigned
 private:
-
+	MarSystemManager mng;
+	MarSystem* peakerNet;
+	MarSystem* net;
+	MarSystem* total;
+	string centerCollection;
+	string halfEdgeCollection;
+	string rimshotCollection;
+	realvec in1;
+	realvec out1;
+	realvec out2;
+	int bufferSize;
+	mrs_natural copt;
+	mrs_real sropt;
+	mrs_real length;
+	mrs_real srate;
+	mrs_natural nChannels;
+	mrs_natural inSamples;
 };
